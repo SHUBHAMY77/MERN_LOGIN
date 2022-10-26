@@ -5,9 +5,10 @@ const mongoose = require("mongoose")
 dotenv.config();
 
 
-
 //setup a server
 const app = express()
+
+app.use(express.json());
 const PORT = process.env.PORT ||  5000;
 app.listen(PORT,()=>{console.log(`website is running on port:- ${PORT}`)})
 
@@ -23,6 +24,10 @@ mongoose.connect(process.env.MDB_CONNECT,{
     console.log("connected to dataBase")
 })
 
+
+// setup a routes
+
+app.use("/auth",require("./routers/userRouters"));
 
 //VPOInpYksqT0aUQA
 
