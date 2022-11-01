@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const User = require("../model/userModels")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 router.post("/",async (req,res)=>{
 
@@ -30,6 +32,31 @@ router.post("/",async (req,res)=>{
             .json({errormessage:"the email already exist in dataBase"})
         }
 
+    const  salt = await bcrypt.genSalt();
+    const passwordHash =  await bcrypt.hash(password,salt)
+
+    // save  a new user  account  to the db
+
+    const newUser = new User({
+        email,passwordHash
+    })
+
+    const savedUser = await newUser.save();
+
+    //logging in new user
+
+    const token = jwt.sign({
+        user:savedUser._id,
+    },
+    process.env.JWT_TOKEN
+    
+    )
+
+   // using http-only token
+
+   res.cookie("token",token,{
+    httpOnly:true
+   }).send();
 
     }catch(err){
         console.error(err)
